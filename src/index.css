@@ -1,33 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
 @import "tailwindcss";
 
-body {
-  background-color: #FFE4E6;
+@theme {
+  --font-sans: "Space Grotesk", "Inter", system-ui, sans-serif;
 }
 
-.neo-bg {
-  background-color: #FFE4E6;
-}
-
-.neo-outset {
-  background: #FFE4E6;
-  box-shadow: 10px 10px 20px #d9c2c4, -10px -10px 20px #ffffff;
-}
-
-.neo-inset {
-  background: #FFE4E6;
-  box-shadow: inset 6px 6px 12px #d9c2c4, inset -6px -6px 12px #ffffff;
-}
-
-.neo-button {
-  background: #FFE4E6;
-  box-shadow: 5px 5px 10px #d9c2c4, -5px -5px 10px #ffffff;
-  transition: all 0.2s ease;
-}
-
-.neo-button:hover {
-  box-shadow: 3px 3px 6px #d9c2c4, -3px -3px 6px #ffffff;
-}
-
-.neo-button:active {
-  box-shadow: inset 4px 4px 8px #d9c2c4, inset -4px -4px 8px #ffffff;
+@layer utilities {
+  .brutal-border {
+    @apply border-4 border-black;
+  }
+  
+  .brutal-shadow {
+    @apply shadow-[8px_8px_0px_0px_rgba(0,0,0,1)];
+  }
+  
+  .brutal-shadow-sm {
+    @apply shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
+  }
+  
+  .brutal-card {
+    @apply border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white;
+  }
+  
+  .brutal-button {
+    @apply border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-[#FF90E8] text-black font-black transition-all active:translate-x-[4px] active:translate-y-[4px] active:shadow-none hover:bg-[#FFC900] disabled:opacity-50 disabled:active:translate-x-0 disabled:active:translate-y-0 disabled:active:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)];
+  }
+  
+  .brutal-button-secondary {
+    @apply border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white text-black font-black transition-all active:translate-x-[4px] active:translate-y-[4px] active:shadow-none hover:bg-[#90FFA9];
+  }
+  
+  .brutal-bg {
+    background-color: #f0f0f0;
+    background-image: radial-gradient(#000 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+  }
 }

@@ -1,4 +1,8 @@
-export const extractFrames = (videoFile: File, numFrames: number = 5): Promise<{base64: string, highResBlobUrl: string}[]> => {
+export const extractFrames = (
+  videoFile: File, 
+  numFrames: number = 13,
+  onProgress?: (current: number, total: number) => void
+): Promise<{base64: string, highResBlobUrl: string}[]> => {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video');
     video.src = URL.createObjectURL(videoFile);
@@ -30,7 +34,6 @@ export const extractFrames = (videoFile: File, numFrames: number = 5): Promise<{
         const originalWidth = video.videoWidth;
         const originalHeight = video.videoHeight;
 
-        // High-res canvas for lossless download (preserves original resolution, e.g., 4K)
         const hrCanvas = document.createElement('canvas');
         hrCanvas.width = originalWidth;
         hrCanvas.height = originalHeight;
@@ -39,7 +42,6 @@ export const extractFrames = (videoFile: File, numFrames: number = 5): Promise<{
           hrCtx.drawImage(video, 0, 0, originalWidth, originalHeight);
         }
 
-        // Low-res canvas for API to save memory and payload size
         const MAX_WIDTH = 1280;
         const MAX_HEIGHT = 720;
         let width = originalWidth;
@@ -64,11 +66,13 @@ export const extractFrames = (videoFile: File, numFrames: number = 5): Promise<{
 
         const base64 = lrCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
-        // Generate lossless PNG blob for high quality download processing
         hrCanvas.toBlob((blob) => {
           if (blob) {
             const highResBlobUrl = URL.createObjectURL(blob);
             frames.push({ base64, highResBlobUrl });
+          }
+          if (onProgress) {
+            onProgress(currentFrame, numFrames);
           }
           currentFrame++;
           captureFrame();
@@ -79,11 +83,9 @@ export const extractFrames = (videoFile: File, numFrames: number = 5): Promise<{
         reject(new Error("Error loading video"));
       };
 
-      // Start capturing
       captureFrame();
     };
     
-    // Trigger load
     video.load();
   });
 };

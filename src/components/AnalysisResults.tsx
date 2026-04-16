@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { VideoAnalysisResult, ExtractedFrame } from '../types';
-import { Sparkles, Download, FileText, Film, Copy, Check, X, Loader2 } from 'lucide-react';
+import { Sparkles, Download, FileText, Film, Copy, Check, X, Loader2, Users } from 'lucide-react';
 
 interface AnalysisResultsProps {
   result: VideoAnalysisResult;
   frames: ExtractedFrame[];
+  videoFile: File | null;
 }
 
 const CopyBtn = ({ text }: { text: string }) => {
@@ -18,15 +19,15 @@ const CopyBtn = ({ text }: { text: string }) => {
   return (
     <button 
       onClick={handleCopy} 
-      className="neo-button p-2 rounded-full text-pink-500 hover:text-pink-600 flex-shrink-0"
+      className="brutal-button-secondary p-2 rounded-none text-black hover:text-black flex-shrink-0"
       title="复制"
     >
-      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+      {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
     </button>
   );
 };
 
-export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ result, frames }) => {
+export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ result, frames, videoFile }) => {
   const [isZhPrompt, setIsZhPrompt] = useState(false);
   const [downloadModal, setDownloadModal] = useState<{ isOpen: boolean, frameIndex: number | null, blobUrl: string | null }>({ isOpen: false, frameIndex: null, blobUrl: null });
   const [dlFormat, setDlFormat] = useState<'jpeg' | 'png'>('jpeg');
@@ -37,9 +38,6 @@ export const AnalysisResults: React.FC<AnalysisResultsProps> = ({ result, frames
     const reportContent = `
 视频分析报告
 ===================
-
-整体风格总结:
-${result.summary}
 
 专业AI视频提示词 (Prompt):
 ${result.overallPrompt}
@@ -130,65 +128,52 @@ ${result.scenes.map((scene, index) => `
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-10 mt-12 pb-20">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-pink-600 flex items-center">
-          <Sparkles className="w-8 h-8 mr-3 text-pink-400" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-4xl font-black text-black flex items-center uppercase tracking-tight">
+          <Sparkles className="w-10 h-10 mr-3 text-black" />
           分析报告
         </h2>
-        <button
-          onClick={handleDownloadReport}
-          className="flex items-center px-6 py-3 neo-button text-pink-600 font-medium rounded-xl"
-        >
-          <Download className="w-5 h-5 mr-2" />
-          下载完整报告
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={handleDownloadReport}
+            className="flex items-center px-6 py-3 brutal-button-secondary text-black font-black"
+          >
+            <Download className="w-6 h-6 mr-2" />
+            下载完整报告
+          </button>
+        </div>
       </div>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="neo-outset rounded-3xl p-8"
-      >
-        <h3 className="text-xl font-semibold text-pink-600 mb-4 flex items-center">
-          <FileText className="w-6 h-6 mr-2 text-pink-400" />
-          整体风格总结
-        </h3>
-        <div className="neo-inset p-6 rounded-2xl">
-          <p className="text-pink-800 leading-relaxed text-lg">{result.summary}</p>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="neo-outset rounded-3xl p-8 relative overflow-hidden"
+        className="brutal-card p-8 bg-[#90FFA9] relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 p-4 opacity-20">
-          <Sparkles className="w-32 h-32 text-pink-300" />
+          <Sparkles className="w-40 h-40 text-black" />
         </div>
-        <div className="flex justify-between items-center mb-4 relative z-10">
+        <div className="flex justify-between items-center mb-6 relative z-10">
           <div className="flex items-center space-x-4">
-            <h3 className="text-xl font-semibold text-pink-600 flex items-center">
-              <Sparkles className="w-6 h-6 mr-2 text-pink-400" />
+            <h3 className="text-2xl font-black text-black flex items-center uppercase">
+              <Sparkles className="w-8 h-8 mr-2 text-black" />
               专业AI视频提示词 (Prompt)
             </h3>
             <button 
               onClick={() => setIsZhPrompt(!isZhPrompt)}
-              className="neo-button px-4 py-1.5 rounded-full text-sm text-pink-600 font-medium"
+              className="brutal-button-secondary px-4 py-2 text-sm text-black font-black uppercase"
             >
               {isZhPrompt ? '显示英文' : '中文翻译'}
             </button>
           </div>
           <CopyBtn text={isZhPrompt ? result.overallPromptZh : result.overallPrompt} />
         </div>
-        <div className="neo-inset rounded-2xl p-6 font-mono text-sm text-pink-900 leading-relaxed break-words relative z-10">
+        <div className="brutal-border bg-white p-6 font-mono text-lg text-black leading-relaxed break-words relative z-10 font-bold">
           {isZhPrompt ? result.overallPromptZh : result.overallPrompt}
         </div>
       </motion.div>
 
       <div className="space-y-8">
-        <h3 className="text-2xl font-bold text-pink-600 mt-12 mb-8 px-2">关键分镜分析</h3>
+        <h3 className="text-4xl font-black text-black mt-16 mb-8 px-2 uppercase tracking-tight">关键分镜分析</h3>
         {result.scenes.map((scene, index) => {
           const combinedText = `镜头语言：${scene.cameraLanguage}\n叙事手法：${scene.narrative}\n视觉风格：${scene.visualStyle}`;
           return (
@@ -196,48 +181,48 @@ ${result.scenes.map((scene, index) => `
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-              className="neo-outset rounded-3xl overflow-hidden flex flex-col md:flex-row p-4 gap-6"
+              transition={{ delay: 0.3 + index * 0.1 }}
+              className="brutal-card bg-white flex flex-col md:flex-row p-6 gap-8"
             >
-              <div className="md:w-1/3 neo-inset rounded-2xl overflow-hidden relative group">
+              <div className="md:w-1/3 brutal-border bg-[#f0f0f0] overflow-hidden relative group">
                 {frames[index] ? (
                   <>
                     <img 
                       src={frames[index].dataUrl} 
                       alt={`Frame ${index + 1}`} 
-                      className="w-full h-full object-cover aspect-video opacity-90 transition-opacity group-hover:opacity-100"
+                      className="w-full h-full object-cover aspect-video"
                     />
                     <button 
                       onClick={() => openDownloadModal(frames[index].highResBlobUrl, index)}
-                      className="absolute bottom-3 right-3 bg-white/80 backdrop-blur-md text-pink-600 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                      className="absolute bottom-3 right-3 brutal-button-secondary p-3 opacity-0 group-hover:opacity-100 transition-opacity"
                       title="下载预览图"
                     >
-                      <Download className="w-4 h-4" />
+                      <Download className="w-6 h-6" />
                     </button>
                   </>
                 ) : (
-                  <div className="w-full h-full aspect-video flex items-center justify-center text-pink-300">
-                    <Film className="w-10 h-10" />
+                  <div className="w-full h-full aspect-video flex items-center justify-center text-black">
+                    <Film className="w-12 h-12" />
                   </div>
                 )}
-                <div className="absolute top-3 left-3 bg-white/60 backdrop-blur-md text-pink-700 font-medium text-xs px-3 py-1.5 rounded-full shadow-sm">
+                <div className="absolute top-3 left-3 bg-[#FFC900] brutal-border text-black font-black text-sm px-4 py-2 uppercase">
                   {scene.timestamp}
                 </div>
               </div>
               
               <div className="md:w-2/3 flex flex-col">
-                <div className="neo-inset p-6 rounded-2xl flex-grow flex flex-col">
-                  <div className="flex justify-between items-start mb-4">
-                    <h4 className="text-sm font-bold text-pink-500 uppercase tracking-wider flex items-center">
-                      <FileText className="w-4 h-4 mr-2" />
+                <div className="brutal-border p-6 bg-[#f8f8f8] flex-grow flex flex-col">
+                  <div className="flex justify-between items-start mb-6">
+                    <h4 className="text-xl font-black text-black uppercase tracking-wider flex items-center">
+                      <FileText className="w-6 h-6 mr-2" />
                       分镜综合分析
                     </h4>
                     <CopyBtn text={combinedText} />
                   </div>
-                  <div className="space-y-4 text-pink-900 text-sm leading-relaxed">
-                    <p><strong className="text-pink-600 block mb-1">镜头语言：</strong>{scene.cameraLanguage}</p>
-                    <p><strong className="text-pink-600 block mb-1">叙事手法：</strong>{scene.narrative}</p>
-                    <p><strong className="text-pink-600 block mb-1">视觉风格：</strong>{scene.visualStyle}</p>
+                  <div className="space-y-6 text-black text-lg leading-relaxed">
+                    <p><strong className="text-black bg-[#FF90E8] px-2 py-1 brutal-border inline-block mb-2 font-black">镜头语言</strong><br/><span className="font-bold">{scene.cameraLanguage}</span></p>
+                    <p><strong className="text-black bg-[#80C6FF] px-2 py-1 brutal-border inline-block mb-2 font-black">叙事手法</strong><br/><span className="font-bold">{scene.narrative}</span></p>
+                    <p><strong className="text-black bg-[#90FFA9] px-2 py-1 brutal-border inline-block mb-2 font-black">视觉风格</strong><br/><span className="font-bold">{scene.visualStyle}</span></p>
                   </div>
                 </div>
               </div>
@@ -248,33 +233,33 @@ ${result.scenes.map((scene, index) => `
 
       <AnimatePresence>
         {downloadModal.isOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm px-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="neo-outset bg-[#FFE4E6] p-8 rounded-3xl max-w-md w-full"
+              className="brutal-card bg-white p-10 max-w-md w-full"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-pink-600">下载预览图设置</h3>
-                <button onClick={() => setDownloadModal({ isOpen: false, frameIndex: null, blobUrl: null })} className="text-pink-400 hover:text-pink-600">
-                  <X className="w-6 h-6" />
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-2xl font-black text-black uppercase">下载预览图设置</h3>
+                <button onClick={() => setDownloadModal({ isOpen: false, frameIndex: null, blobUrl: null })} className="text-black hover:bg-[#FF5C5C] brutal-border p-1 transition-colors">
+                  <X className="w-8 h-8" />
                 </button>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <div>
-                  <label className="block text-sm font-bold text-pink-500 mb-3">图片格式</label>
+                  <label className="block text-lg font-black text-black mb-4 uppercase">图片格式</label>
                   <div className="flex gap-4">
                     <button 
                       onClick={() => setDlFormat('jpeg')}
-                      className={`flex-1 py-2 rounded-xl font-medium transition-all ${dlFormat === 'jpeg' ? 'neo-inset text-pink-600' : 'neo-outset text-pink-400'}`}
+                      className={`flex-1 py-3 font-black uppercase transition-all ${dlFormat === 'jpeg' ? 'brutal-button bg-[#FF90E8]' : 'brutal-button-secondary'}`}
                     >
                       JPG
                     </button>
                     <button 
                       onClick={() => setDlFormat('png')}
-                      className={`flex-1 py-2 rounded-xl font-medium transition-all ${dlFormat === 'png' ? 'neo-inset text-pink-600' : 'neo-outset text-pink-400'}`}
+                      className={`flex-1 py-3 font-black uppercase transition-all ${dlFormat === 'png' ? 'brutal-button bg-[#FF90E8]' : 'brutal-button-secondary'}`}
                     >
                       PNG (无损)
                     </button>
@@ -282,7 +267,7 @@ ${result.scenes.map((scene, index) => `
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-pink-500 mb-3">分辨率</label>
+                  <label className="block text-lg font-black text-black mb-4 uppercase">分辨率</label>
                   <div className="grid grid-cols-2 gap-4">
                     {[
                       { id: 'original', label: '原画 (Original)' },
@@ -293,7 +278,7 @@ ${result.scenes.map((scene, index) => `
                       <button 
                         key={res.id}
                         onClick={() => setDlResolution(res.id as any)}
-                        className={`py-2 rounded-xl font-medium transition-all ${dlResolution === res.id ? 'neo-inset text-pink-600' : 'neo-outset text-pink-400'}`}
+                        className={`py-3 font-black uppercase transition-all ${dlResolution === res.id ? 'brutal-button bg-[#90FFA9]' : 'brutal-button-secondary'}`}
                       >
                         {res.label}
                       </button>
@@ -304,9 +289,9 @@ ${result.scenes.map((scene, index) => `
                 <button 
                   onClick={executeDownload}
                   disabled={isDownloading}
-                  className="w-full py-3 mt-4 neo-button text-pink-600 font-bold rounded-xl flex items-center justify-center"
+                  className="w-full py-4 mt-8 brutal-button text-xl flex items-center justify-center"
                 >
-                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Download className="w-5 h-5 mr-2" />}
+                  {isDownloading ? <Loader2 className="w-6 h-6 animate-spin mr-3" /> : <Download className="w-6 h-6 mr-3" />}
                   {isDownloading ? '处理中...' : '确认下载'}
                 </button>
               </div>
